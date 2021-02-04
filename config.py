@@ -41,6 +41,7 @@ class Config:
                             help="path to store logs into. if not given logs are not saved to file.")
         parser.add_argument('-tb', '--tensorboard', dest='use_tensorboard', action='store_true',
                             help='use tensorboard during training')
+        parser.add_argument('-i', '--input-files', dest='input_files', metavar="FILE", required=False)
         return parser
 
     def set_defaults(self):
@@ -55,6 +56,7 @@ class Config:
         self.SHUFFLE_BUFFER_SIZE = 10000
         self.CSV_BUFFER_SIZE = 100 * 1024 * 1024  # 100 MB
         self.MAX_TO_KEEP = 10
+        self.INPUT_FILES = []
 
         # model hyper-params
         self.MAX_CONTEXTS = 200
@@ -85,6 +87,7 @@ class Config:
         self.LOGS_PATH = args.logs_path
         self.DL_FRAMEWORK = 'tensorflow' if not args.dl_framework else args.dl_framework
         self.USE_TENSORBOARD = args.use_tensorboard
+        self.INPUT_FILES = args.input_files.split(',') if args.input_files else []
 
     def __init__(self, set_defaults: bool = False, load_from_args: bool = False, verify: bool = False):
         self.NUM_TRAIN_EPOCHS: int = 0
@@ -98,6 +101,7 @@ class Config:
         self.SHUFFLE_BUFFER_SIZE: int = 0
         self.CSV_BUFFER_SIZE: int = 0
         self.MAX_TO_KEEP: int = 0
+        self.INPUT_FILES: [] = []
 
         # model hyper-params
         self.MAX_CONTEXTS: int = 0

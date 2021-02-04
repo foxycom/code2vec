@@ -25,7 +25,32 @@ class InteractivePredictor:
         with open(input_filename, 'r') as file:
             return file.readlines()
 
+    def predict_input_files(self):
+        for file in self.config.INPUT_FILES:
+            try:
+                predict_lines, hash_to_string_dict = self.path_extractor.extract_paths(file)
+            except ValueError as e:
+                print(e)
+                continue
+            raw_prediction_results = self.model.predict(predict_lines)
+            method_prediction_results = common.parse_prediction_results(
+                raw_prediction_results, hash_to_string_dict,
+                self.model.vocabs.target_vocab.special_words, topk=SHOW_TOP_CONTEXTS)
+
+            for raw_prediction, method_prediction in zip(raw_prediction_results, method_prediction_results):
+                #print('Original name:\t' + method_prediction.original_name)
+                # for attention_obj in method_prediction.attention_paths:
+                #     print('%f\tcontext: %s,%s,%s' % (
+                #         attention_obj['score'], attention_obj['token1'], attention_obj['path'],
+                #         attention_obj['token2']))
+                # if self.config.EXPORT_CODE_VECTORS:
+                #     print('Code vector:')
+                print(' '.join(map(str, raw_prediction.code_vector)))
+
     def predict(self):
+        if len(self.config.INPUT_FILES) > 0:
+            return self.predict_input_files()
+
         input_filename = 'Input.java'
         print('Starting interactive prediction...')
         while True:
@@ -51,7 +76,8 @@ class InteractivePredictor:
                 print('Attention:')
                 for attention_obj in method_prediction.attention_paths:
                     print('%f\tcontext: %s,%s,%s' % (
-                    attention_obj['score'], attention_obj['token1'], attention_obj['path'], attention_obj['token2']))
+                        attention_obj['score'], attention_obj['token1'], attention_obj['path'],
+                        attention_obj['token2']))
                 if self.config.EXPORT_CODE_VECTORS:
                     print('Code vector:')
                     print(' '.join(map(str, raw_prediction.code_vector)))
