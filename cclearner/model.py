@@ -1,4 +1,5 @@
 import tensorflow as tf
+import parser
 from tensorflow import keras
 from tensorflow.keras import layers
 
@@ -11,10 +12,13 @@ def create_model():
         layers.Dense(2, activation='softmax', input_shape=(10,), )
     ])
     model.compile(optimizer=opt, loss='binary_crossentropy')
-    x = tf.ones((1, 384))
-    y = model(x)
+    # x = tf.ones((1, 384))
+    # y = model(x)
     print(model.summary())
+    return model
 
 
 if __name__ == '__main__':
-    create_model()
+    model = create_model()
+    features, labels = parser.load('data.txt')
+    model.fit(features, labels, epochs=3)

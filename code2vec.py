@@ -35,4 +35,7 @@ if __name__ == '__main__':
     if config.PREDICT:
         predictor = InteractivePredictor(config, model)
         predictor.predict()
+    if config.CCLEARNER:
+        import cclearner.train as cc
+        cc.train(config, model)
     model.close_session()
